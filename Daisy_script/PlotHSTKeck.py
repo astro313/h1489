@@ -22,17 +22,7 @@ from FgContIm import *
 path = '../PriorImage/'
 Plotpath = '../OverlayFig/'
 
-# Used for testing binings and stuff
-# # z = '2.685.'
-# z = '2.685_arc.bin2'
-# z2 = '2.688.'
-# zN = '2.688.NReg.'
-
-# sym = z        # change the sigma
-# #CD, C, D = 'CD_USB_HST'+sym, 'C_USB_HST'+sym, 'D_USB_HST'+sym
-# CD = 'CD_USB_'+sym
-
-label = dict.fromkeys(['J133543', '-H', '-Ks', 'mom0', 'cont'])
+label = dict.fromkeys(['J133543', '-H', '-Ks', 'mom0'])
 for k in label.iterkeys():
     files = glob.glob(path+'*'+k+'*.fits')
     label[k] = files
@@ -42,7 +32,6 @@ print label
 figC = plt.figure(3, figsize=(12, 5))
 figD = plt.figure(2, figsize=(12, 5))
 figCD = plt.figure(1, figsize=(12, 5))
-fig = plt.figure(4, figsize=(5, 5))
 
 ########################################
 # user define area
@@ -53,23 +42,7 @@ VLA_dec = 30.06857
 
 ra_center = VLA_ra
 dec_center = VLA_dec
-
-# Used for testing different binnings
-# NReg:
-# sigma_C = 0.655
-# sigma_D = 0.76
-# sigma_CD = 0.57
-# # 2.685
-# sigma_C = 0.65
-# sigma_D = 0.973
-# sigma_CD = 0.675
-# 2.688
-# sigma_C = 0.5
-# sigma_D = 0.998
-# sigma_CD = 0.615
-
 sigma_line = 0.5161
-sigma_cont = 2.444e-4
 
 sizep = 0.0035
 sizePLine = 0.0040
@@ -95,7 +68,7 @@ flinC.show_colorscale(cmap=mpl.cm.jet) #, vmin=min_line, vmax=max_line, vmid=min
 
 fvlaD = aplpy.FITSFigure(label['J133543'][0], \
         figure=figD, subplot=[x0,row_a,width,dy], north=True)
-fvlaD.show_grayscale() #stretch='log', vmin=vla_min, vmax=vla_max, vmid=vla_min-0.1)
+fvlaD.show_grayscale()  # stretch='log', vmin=vla_min, vmax=vla_max, vmid=vla_min-0.1)
 
 flinD = aplpy.FITSFigure(label['mom0'][0], \
         figure=figD, subplot=[x0+width+2*x_gap, row_a, width, dy])
@@ -109,9 +82,7 @@ flinCD = aplpy.FITSFigure(label['mom0'][0], \
         figure=figCD, subplot=[x0+width+2*x_gap, row_a, width, dy])
 flinCD.show_colorscale(cmap=mpl.cm.jet)
 
-figCont = aplpy.FITSFigure(label['cont'][0], \
-        figure=fig)
-figCont.show_colorscale(cmap=mpl.cm.jet)
+
 
 ########################################
 # Contours
@@ -128,9 +99,6 @@ flinD.show_contour(label['mom0'][0], colors="white", levels=sigma_contour_CARMA(
 fvlaCD.show_contour(label['mom0'][0], colors='red', levels=sigma_contour_CARMA(sigma_line), linewidths=2, layer='fg_cont')
 flinCD.show_contour(label['mom0'][0], colors="white", levels=sigma_contour_CARMA(sigma_line), linewidths=2, layer='mol')
 
-figCont.show_contour(label['cont'][0], colors='red', levels=sigma_contour_CARMA(sigma_cont), linewidths=2, layer='fg_cont')
-
-
 ########################################
 # beam
 ########################################
@@ -140,7 +108,6 @@ figCont.show_contour(label['cont'][0], colors='red', levels=sigma_contour_CARMA(
 setup_beam(flinC)
 setup_beam(flinD)
 setup_beam(flinCD)
-setup_beam(figCont)
 
 ########################################
 # Compass, bug in APLpy
@@ -188,7 +155,7 @@ markers_cross(flinD, ra_cross, dec_cross, layer='marker_set_1')
 markers_cross(fvlaCD, ra_cross, dec_cross, layer='marker_set_1')
 markers_cross(flinCD, ra_cross, dec_cross, layer='marker_set_1')
 
-markers_cross(figCont, ra_cross, dec_cross, layer='marker_set_1')
+
 
 ########################################
 # Labels
@@ -248,7 +215,6 @@ if __name__ == '__main__':
         figD.savefig(Plotpath + 'HST.png', dpi=300)
 #        figCD.savefig(Plotpath + CD[:-1] + '.eps', dpi=600)
         figCD.savefig(Plotpath + 'KeckH.png', dpi=300)
-        figCont.savefig(Plotpath + 'Cont.png', dpi=300)
     else:
         plt.show()
 

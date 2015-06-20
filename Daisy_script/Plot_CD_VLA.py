@@ -47,12 +47,13 @@ sigma_cont = 2.444e-4
 
 sizep = 0.0035
 sizePLine = 0.0040
+sizeCont = 0.007
 
 # # positions for crosses, centering on radio core
 ra_cross, dec_cross = ra_center, dec_center
 
 figCD = plt.figure(1, figsize=(12, 5))
-fig = plt.figure(4, figsize=(5, 5))
+fig = plt.figure(4, figsize=(12, 5))
 
 row_a = 0.10
 width = 0.35
@@ -73,19 +74,22 @@ flinCD = aplpy.FITSFigure(label['mom0'][0], \
 flinCD.show_colorscale(cmap=mpl.cm.jet)
 
 figCont = aplpy.FITSFigure(label['cont'][0], \
-        figure=fig)
+        figure=fig, subplot=[x0,row_a,width,dy])
 figCont.show_colorscale(cmap=mpl.cm.jet)
+figContzoom = aplpy.FITSFigure(label['cont'][0], \
+        figure=fig, subplot=[x0+width+2*x_gap, row_a, width, dy])
+figContzoom.show_colorscale(cmap=mpl.cm.jet)
 
 
 ########################################
 # Contours
 ########################################
 
-fvlaCD.show_contour(label['VLA'][0], colors="lime", levels=sigma_contour_array(sigma_VLA), linewidths=2, layer='fg')
+fvlaCD.show_contour(label['VLA'][0], colors="blue", levels=sigma_contour_array(sigma_VLA), linewidths=2, layer='fg')
 fvlaCD.show_contour(label['mom0'][0], colors='red', levels=sigma_contour_CARMA(sigma_line), linewidths=2, layer='fg_cont')
 flinCD.show_contour(label['mom0'][0], colors="white", levels=sigma_contour_CARMA(sigma_line), linewidths=2, layer='mol')
-
 figCont.show_contour(label['cont'][0], colors='red', levels=sigma_contour_CARMA(sigma_cont), linewidths=1.5, layer='fg_cont')
+figContzoom.show_contour(label['cont'][0], colors='red', levels=sigma_contour_CARMA(sigma_cont), linewidths=1.5, layer='fg_cont')
 ########################################
 # beam
 ########################################
@@ -93,6 +97,7 @@ figCont.show_contour(label['cont'][0], colors='red', levels=sigma_contour_CARMA(
 setup_beam(fvlaCD)
 setup_beam(flinCD)
 setup_beam(figCont)
+setup_beam(figContzoom)
 
 
 ########################################
@@ -111,10 +116,12 @@ lg_1arcsec = 1./3600
 ########################################
 standard_plot_setup(fvlaCD, ra_center, dec_center, sizep)
 standard_plot_setup(flinCD, ra_center, dec_center, sizePLine)
-standard_plot_setup(figCont, ra_center, dec_center, sizePLine)
+standard_plot_setup(figCont, ra_center, dec_center, sizeCont)
+standard_plot_setup(figContzoom, ra_center, dec_center, sizePLine)
 # fcont.tick_labels.hide()
 # fcont.axis_labels.hide()
 flinCD.axis_labels.hide()
+figContzoom.axis_labels.hide()
 
 
 ########################################
@@ -123,15 +130,19 @@ flinCD.axis_labels.hide()
 markers_cross(fvlaCD, ra_cross, dec_cross, layer='marker_set_1')
 markers_cross(flinCD, ra_cross, dec_cross, layer='marker_set_1')
 markers_cross(figCont, ra_cross, dec_cross, layer='marker_set_1')
+markers_cross(figContzoom, ra_cross, dec_cross, layer='marker_set_1')
+
 
 ########################################
 # Labels
 ########################################
 put_label(fvlaCD, 0.25, 0.95, 'VLA 6GHz', 'titleBand')
 put_label(fvlaCD, 0.2625, 0.9, 'NA.v1.489', 'titleObj')
-put_label(flinCD, 0.5, 0.95, 'CARMA CO(3-2)', 'titleBand', c='black')
+put_label(flinCD, 0.31, 0.95, 'CARMA CO(3-2)', 'titleBand', c='black')
 put_label(flinCD, 0.31, 0.9, 'NA.v1.489', 'titleObj', c='black')
-put_label(figCont, 0.5, 0.95, 'CARMA Continuum', 'titleBand', c='black')
+put_label(figCont, 0.45, 0.95, 'CARMA Continuum', 'titleBand', c='black')
+put_label(figContzoom, 0.5, 0.95, 'CARMA Continuum Zoomed in', 'titleBand', c='black')
+
 
 labsize = 'xx-large'
 labc = 'white'
@@ -165,6 +176,6 @@ if __name__ == '__main__':
 #        figCD.savefig(Plotpath + CD + '.eps', dpi=600)
         print ("saving to {:s}").format(Plotpath + 'CO32mom0.png')
         figCD.savefig(Plotpath + 'CO32mom0.png', dpi=300)
-        figCont.savefig(Plotpath + 'Cont.png', dpi=300)
+        fig.savefig(Plotpath + 'Cont.png', dpi=300)
     else:
         plt.show()
