@@ -20,7 +20,14 @@ from FgContIm import *
 path = '../PriorImage/'
 Plotpath = '../OverlayFig/'
 
-label = dict.fromkeys(['VLA', 'mom0', 'cont'])
+
+# 'S.bin5.co32.mom0'    # 0.680
+# 'bin5.co32.mom0', sigma = 0.753
+# 'bin5.32_43co32.mom0', sigma = 0.928 (Personally prefer this over bin5.co32.mom0, i.e. the entry above)
+itermomName = 'S.bin5.co32.mom0'
+
+
+label = dict.fromkeys(['VLA', itermomName, 'cont'])
 for k in label.iterkeys():
     files = glob.glob(path+'*'+k+'*.fits')
     label[k] = files
@@ -42,8 +49,8 @@ vla_max = 1.08e58-4
 ra_center = VLA_ra
 dec_center = VLA_dec
 
-sigma_line = 0.5161
-sigma_cont = 2.444e-4
+sigma_line = 0.680 #0.928      #0.753      #0.680
+sigma_cont = 2.19276E-04
 
 sizep = 0.0035
 sizePLine = 0.0040
@@ -69,7 +76,7 @@ fvlaCD = aplpy.FITSFigure(label['VLA'][0], \
         figure=figCD, subplot=[x0,row_a,width,dy])
 fvlaCD.show_grayscale() #stretch='log', vmin=vla_min, vmax=vla_max, vmid=vla_min-0.1)
 
-flinCD = aplpy.FITSFigure(label['mom0'][0], \
+flinCD = aplpy.FITSFigure(label[itermomName][0], \
         figure=figCD, subplot=[x0+width+2*x_gap, row_a, width, dy])
 flinCD.show_colorscale(cmap=mpl.cm.jet)
 
@@ -86,8 +93,8 @@ figContzoom.show_colorscale(cmap=mpl.cm.jet)
 ########################################
 
 fvlaCD.show_contour(label['VLA'][0], colors="blue", levels=sigma_contour_array(sigma_VLA), linewidths=2, layer='fg')
-fvlaCD.show_contour(label['mom0'][0], colors='red', levels=sigma_contour_CARMA(sigma_line), linewidths=2, layer='fg_cont')
-flinCD.show_contour(label['mom0'][0], colors="white", levels=sigma_contour_CARMA(sigma_line), linewidths=2, layer='mol')
+fvlaCD.show_contour(label[itermomName][0], colors='red', levels=sigma_contour_CARMA(sigma_line), linewidths=2, layer='fg_cont')
+flinCD.show_contour(label[itermomName][0], colors="white", levels=sigma_contour_CARMA(sigma_line), linewidths=2, layer='mol')
 figCont.show_contour(label['cont'][0], colors='red', levels=sigma_contour_CARMA(sigma_cont), linewidths=1.5, layer='fg_cont')
 figContzoom.show_contour(label['cont'][0], colors='red', levels=sigma_contour_CARMA(sigma_cont), linewidths=1.5, layer='fg_cont')
 ########################################
@@ -172,10 +179,10 @@ if __name__ == '__main__':
         raise IndexError(errmsg.format(len(sys.argv)))
     saveFig = True if sys.argv[1].lower() == 'true' else False
     if saveFig == True:
-        os.system('rm -rf ' + 'CO32mom0.png' + ' ' + 'CO32mom0.eps')
+        os.system('rm -rf ' + itermomName + '.png' + ' ' + itermomName + '.eps')
 #        figCD.savefig(Plotpath + CD + '.eps', dpi=600)
-        print ("saving to {:s}").format(Plotpath + 'CO32mom0.png')
-        figCD.savefig(Plotpath + 'CO32mom0.png', dpi=300)
+        print ("saving to {:s}").format(Plotpath + itermomName + '.png')
+        figCD.savefig(Plotpath + itermomName + '.png', dpi=300)
         fig.savefig(Plotpath + 'Cont.png', dpi=300)
     else:
         plt.show()
