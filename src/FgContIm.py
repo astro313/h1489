@@ -49,6 +49,11 @@ def sigma_contour_CARMA(sigma):
 
 
 def standard_plot_setup(sp, ra_center, dec_center, size):
+    '''
+    Keyword
+        weight:
+        This can either be a numeric value in the range 0-1000 or one of ‘ultralight’, ‘light’, ‘normal’, ‘regular’, ‘book’, ‘medium’, ‘roman’, ‘semibold’, ‘demibold’, ‘demi’, ‘bold’, ‘heavy’, ‘extra bold’, ‘black’.
+    '''
     sp.set_frame_color('black')
     sp.frame.set_linewidth(1)
     sp.set_system_latex(True)
@@ -64,8 +69,8 @@ def standard_plot_setup(sp, ra_center, dec_center, size):
     sp.ticks.set_minor_frequency(4)
     # sp.ticks.set_xspacing(45*15/3600.)        # deg
 
-    sp.axis_labels.set_font(size='medium', weight='bold')      # (size='12')
-    sp.axis_labels.set_xtext('Right Ascension (J2000)')
+    sp.axis_labels.set_font(size='medium', weight='black')      # (size='12')
+    sp.axis_labels.set_xtext('R.A. (J2000)')
     sp.axis_labels.set_ytext('Declination (J2000)')
     sp.axis_labels.set_xpad(3)
     sp.axis_labels.set_ypad(-40)

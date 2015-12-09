@@ -53,27 +53,17 @@ print label
 # user define area
 ########################################
 # 13:35:42.245, 30:04:06.854
-VLA_ra = 203.927
-VLA_dec = 30.06857
-sigma_VLA = 7.1885e-6
-vla_min = -3e-5
-vla_max = 1.08e58 - 4
-
-ra_center = VLA_ra
-dec_center = VLA_dec
-
-sigma_line = 0.680  # 0.928      #0.753      #0.680   per beam
-sigma_SMA = 2.9E-04
-
-sizep = 0.0035
-sizePLine = 0.0040
-sizeCont = 0.007
-
-# # positions for crosses, centering on radio core
+ra_center = 203.927
+dec_center = 30.06857
+# positions for crosses
 ra_cross, dec_cross = ra_center, dec_center
 
-figCD = plt.figure(1, figsize=(12, 5))
-fig = plt.figure(4, figsize=(12, 5))
+sigma_CO = 0.680  # 0.928      #0.753      #0.680   per beam
+sigma_SMA = 2.9E-04
+
+sizep = 0.007
+
+fig = plt.figure(1, figsize=(6, 6))
 
 row_a = 0.10
 width = 0.35
@@ -85,51 +75,48 @@ dy = 0.90
 ########################################
 # intialize base figure
 ########################################
-fvlaCD = aplpy.FITSFigure(label['VLA'][0],
-                          figure=figCD, subplot=[x0, row_a, width, dy])
-fvlaCD.show_grayscale()  # stretch='log', vmin=vla_min, vmax=vla_max, vmid=vla_min-0.1)
-
-flinCD = aplpy.FITSFigure(label[itermomName][0],
-                          figure=figCD, subplot=[x0 + width + 2 * x_gap, row_a, width, dy])
-flinCD.show_colorscale(cmap=mpl.cm.jet)
-
-figCont = aplpy.FITSFigure(label['VLA'][0],
-                           figure=fig, subplot=[x0, row_a, width, dy])
-figCont.show_grayscale()
-figContzoom = aplpy.FITSFigure(label['cont'][0],
-                               figure=fig, subplot=[x0 + width + 2 * x_gap, row_a, width, dy])
-figContzoom.show_colorscale(cmap=mpl.cm.jet)
+figCont = aplpy.FITSFigure(label['SMA'][0],
+                           figure=fig, subplot=[x0, row_a, 0.8, dy])
+figCont.set_system_latex(True)
+# figCont.show_grayscale()
 
 
 ########################################
 # Contours
 ########################################
 
-fvlaCD.show_contour(label['VLA'][0], colors="blue", levels=sigma_contour_array(
-    sigma_VLA), linewidths=2, layer='fg')
-fvlaCD.show_contour(label[itermomName][0], colors='red', levels=sigma_contour_CARMA(
-    sigma_line), linewidths=2, layer='fg_cont')
+figCont.show_contour(label['SMA'][0], colors='red', levels=sigma_contour_array(
+    sigma_SMA), linewidths=1.5, layer='Cont')
+figCont.show_contour(label[COitermomName][0], colors="blue", levels=sigma_contour_CARMA(
+    sigma_CO), linewidths=1.5, layer='mol')
 
-flinCD.show_contour(label[itermomName][0], colors="white", levels=sigma_contour_CARMA(
-    sigma_line), linewidths=2, layer='mol')
-
-
-figCont.show_contour(label['VLA'][0], colors='red', levels=sigma_contour_array(
-    sigma_VLA), linewidths=1.5, layer='fg_cont')
-figCont.show_contour(label['cont'][0], colors="white", levels=sigma_contour_CARMA(
-    sigma_cont), linewidths=2, layer='mol')
-
-figContzoom.show_contour(label['cont'][0], colors='red', levels=sigma_contour_CARMA(
-    sigma_cont), linewidths=1.5, layer='fg_cont')
 ########################################
 # beam
 ########################################
 
-setup_beam(fvlaCD)
-setup_beam(flinCD)
-setup_beam(figCont)
-setup_beam(figContzoom)
+# setup_beam(figCont)
+# for some reason auto setup doesnt for SMA data
 
+# the following hack didn't work either
+# rad2deg = 57.2958
+# BMAJ = 1.2278E-03 * rad2deg
+# BMIN = 8.1474E-04 * rad2deg
+# BPA = 43.82
+
+# figCont.add_beam(0, 0, 0)
+# figCont.beam.show()
+# figCont.beam.set_major(BMAJ)  # degrees
+# figCont.beam.set_minor(BMIN)  # degrees
+# figCont.beam.set_angle(BPA)  # degrees
+
+# fig.beam.set_corner('bottom left')
+# fig.beam.set_frame(False)
+# fig.beam.set_alpha(0.5)
+# fig.beam.set_color('black')
+# fig.beam.set_edgecolor('white')
+# fig.beam.set_facecolor('green')
+# fig.beam.set_linestyle('dashed')
+# fig.beam.set_linewidth(2)  # points
 
 ########################################
 # scale bar
@@ -145,37 +132,28 @@ lg_1arcsec = 1. / 3600
 ########################################
 # axes
 ########################################
-standard_plot_setup(fvlaCD, ra_center, dec_center, sizep)
-standard_plot_setup(flinCD, ra_center, dec_center, sizePLine)
 standard_plot_setup(figCont, ra_center, dec_center, sizep)
-standard_plot_setup(figContzoom, ra_center, dec_center, sizePLine)
+
 # fcont.tick_labels.hide()
 # fcont.axis_labels.hide()
-flinCD.axis_labels.hide()
-figContzoom.axis_labels.hide()
-
 
 ########################################
 # markers
 ########################################
-markers_cross(fvlaCD, ra_cross, dec_cross, layer='marker_set_1')
-markers_cross(flinCD, ra_cross, dec_cross, layer='marker_set_1')
-markers_cross(figCont, ra_cross, dec_cross, layer='marker_set_1')
-markers_cross(figContzoom, ra_cross, dec_cross, layer='marker_set_1')
+# markers_cross(figCont, ra_cross, dec_cross, layer='marker_set_1')
 
 
 ########################################
 # Labels
 ########################################
-put_label(fvlaCD, 0.25, 0.95, 'VLA 6GHz', 'titleBand')
-put_label(fvlaCD, 0.2625, 0.9, 'NA.v1.489', 'titleObj')
-put_label(flinCD, 0.31, 0.95, 'CARMA CO(3-2)', 'titleBand', c='black')
-put_label(flinCD, 0.31, 0.9, 'NA.v1.489', 'titleObj', c='black')
-put_label(figCont, 0.45, 0.95, 'VLA 6GHz', 'titleBand', c='black')
-put_label(figContzoom, 0.5, 0.95, 'CARMA Continuum', 'titleBand', c='black')
-
-
 labsize = 'xx-large'
+put_label(figCont, 0.25, 0.9, 'NA.v1.489', 'titleObj', c='black', s=labsize)
+put_label(figCont, 0.25, 0.95, 'SMA 228 GHz', 'titleBand', c='red', s=labsize)
+put_label(figCont, 0.25, 0.85, 'CARMA CO(3-2)', 'titleBand2', c='blue', s=labsize)
+
+put_label(figCont, 0.75, 0.95, 'SMA: +/-2^n' + r'$\times\sigma$', 'titleerrSMA', c='black', w=1000)
+put_label(figCont, 0.75, 0.85, 'CO: +/-2,3,...' + r'$\times\sigma$', 'titleerrCO', c='black', w=1000)
+
 labc = 'white'
 #put_label(fvla, 0.80, 0.925, '(a)', 'ref', c=labc, s=labsize)
 #put_label(fcont, 0.80, 0.925, '(b)', 'ref', c=labc, s=labsize)
